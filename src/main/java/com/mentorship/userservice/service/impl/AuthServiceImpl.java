@@ -43,7 +43,6 @@ public class AuthServiceImpl implements AuthService {
             user.getLoginDetails().getEmail(), user.getLoginDetails().getPassword()));
 
 
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
 
