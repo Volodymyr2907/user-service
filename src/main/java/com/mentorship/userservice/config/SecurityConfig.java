@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -33,7 +32,7 @@ public class SecurityConfig {
         http.csrf().disable()
             .authorizeHttpRequests((authorize) ->
                 authorize
-                    .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/auth-service/**").permitAll()
                     .anyRequest().authenticated());
 
         return http.build();

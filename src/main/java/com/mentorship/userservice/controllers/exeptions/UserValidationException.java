@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomException extends RuntimeException {
+public class UserValidationException extends Exception {
 
     private HttpStatus status;
     private String message;

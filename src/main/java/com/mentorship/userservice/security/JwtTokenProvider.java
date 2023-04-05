@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -12,26 +13,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwt-secret}")
+    @Value("${APP_JWT_SECRET}")
     private String jwtSecret;
 
-    @Value("${app-jwt-expiration-milliseconds}")
+    @Value("${APP_JWT_EXPIRATION_MILLISECONDS}")
     private long jwtExpirationDate;
 
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
 
-        Date currentDate = new Date();
-
-        Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
-
-        String token = Jwts.builder()
+        return Jwts.builder()
             .setSubject(username)
-            .setIssuedAt(new Date())
-            .setExpiration(expireDate)
+            .setIssuedAt(Date.from(Instant.now()))
+            .setExpiration(Date.from(Instant.from(Instant.now()).plusMillis(jwtExpirationDate)))
             .signWith(key())
             .compact();
-        return token;
     }
 
     private Key key() {

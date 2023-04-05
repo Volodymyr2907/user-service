@@ -32,8 +32,8 @@ public class RestAPIExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<Object> handleCustomException(CustomException exception) {
+    @ExceptionHandler(UserValidationException.class)
+    public ResponseEntity<Object> handleUserValidationException(UserValidationException exception) {
         return buildResponseEntity(exception.getStatus(), List.of(exception.getMessage()));
     }
 
