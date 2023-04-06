@@ -1,6 +1,6 @@
 package com.mentorship.userservice.service.impl;
 
-import static com.mentorship.userservice.dto.UserRole.REGULAR_USER;
+import static com.mentorship.userservice.dto.enums.UserRole.REGULAR_USER;
 
 import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.domain.User;

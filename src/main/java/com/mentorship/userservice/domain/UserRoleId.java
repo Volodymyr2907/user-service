@@ -1,6 +1,6 @@
 package com.mentorship.userservice.domain;
 
-import com.mentorship.userservice.dto.UserRole;
+import com.mentorship.userservice.dto.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

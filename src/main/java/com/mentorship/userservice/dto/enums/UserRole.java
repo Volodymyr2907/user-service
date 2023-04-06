@@ -1,4 +1,4 @@
-package com.mentorship.userservice.dto;
+package com.mentorship.userservice.dto.enums;
 
 public enum UserRole {
 
