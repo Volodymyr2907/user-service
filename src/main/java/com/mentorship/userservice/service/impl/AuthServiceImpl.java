@@ -1,11 +1,16 @@
 package com.mentorship.userservice.service.impl;
 
-import com.mentorship.userservice.controllers.exeptions.CustomException;
+import static com.mentorship.userservice.dto.enums.UserRole.REGULAR_USER;
+
+import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.domain.User;
+import com.mentorship.userservice.domain.UserRole;
+import com.mentorship.userservice.domain.UserRoleId;
 import com.mentorship.userservice.dto.LoginDto;
 import com.mentorship.userservice.dto.RegistrationDto;
 import com.mentorship.userservice.mapper.AuthMapper;
 import com.mentorship.userservice.repositories.UserRepository;
+import com.mentorship.userservice.repositories.UserRoleRepository;
 import com.mentorship.userservice.security.JwtTokenProvider;
 import com.mentorship.userservice.service.AuthService;
 import jakarta.transaction.Transactional;
@@ -25,10 +30,11 @@ public class AuthServiceImpl implements AuthService {
 
 
     private static final String USER_WITH_EMAIL_ALREADY_EXIST_MESSAGE = "User with email '%s' already exist";
-    private static final String USER_WITH_FIRST_NAME_AND_LAST_NAME_AND_PHONE_NUMBER_ALREADY_EXIST_MESSAGE = "User with firstName '%s' and lastName '%s' and phoneNumber '%s' already exist";
+    private static final String USER_ALREADY_EXIST_WITH_SUCH_DETAILS_MESSAGE = "User with firstName '%s' and lastName '%s' and phoneNumber '%s' already exist";
 
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
+    private UserRoleRepository userRoleRepository;
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider jwtTokenProvider;
     private AuthMapper mapper;
@@ -42,27 +48,24 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
             user.getLoginDetails().getEmail(), user.getLoginDetails().getPassword()));
 
-
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
 
         return jwtTokenProvider.generateToken(authentication);
 
     }
 
     @Override
-    public String registration(RegistrationDto dto) {
+    public void registration(RegistrationDto dto) throws UserValidationException {
 
         if (userRepository.existsByLoginDetails_Email(dto.getEmail())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,
+            throw new UserValidationException(HttpStatus.BAD_REQUEST,
                 String.format(USER_WITH_EMAIL_ALREADY_EXIST_MESSAGE, dto.getEmail()));
         }
 
         if (userRepository.existsByFirstNameAndLastNameAndPhoneNumber(dto.getFirstName(),
             dto.getLastName(), dto.getPhoneNumber())) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,
-                String.format(USER_WITH_FIRST_NAME_AND_LAST_NAME_AND_PHONE_NUMBER_ALREADY_EXIST_MESSAGE,
+            throw new UserValidationException(HttpStatus.BAD_REQUEST,
+                String.format(USER_ALREADY_EXIST_WITH_SUCH_DETAILS_MESSAGE,
                     dto.getFirstName(), dto.getLastName(), dto.getPhoneNumber()));
         }
 
@@ -74,8 +77,18 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
 
-        userRepository.save(user);
+        User createdUser = userRepository.save(user);
 
-        return "Registration is successful";
+        UserRole userRole = new UserRole();
+        UserRoleId userRoleId = new UserRoleId();
+
+        userRoleId.setUserId(createdUser.getId());
+        userRoleId.setRole(REGULAR_USER);
+
+        userRole.setUserRoleId(userRoleId);
+        userRole.setUser(createdUser);
+
+        userRoleRepository.save(userRole);
+
     }
 }

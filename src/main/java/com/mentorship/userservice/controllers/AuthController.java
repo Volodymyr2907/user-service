@@ -1,5 +1,6 @@
 package com.mentorship.userservice.controllers;
 
+import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.dto.AuthTokenDto;
 import com.mentorship.userservice.dto.LoginDto;
 import com.mentorship.userservice.dto.RegistrationDto;
@@ -23,17 +24,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthTokenDto> login(@Valid @RequestBody LoginDto loginDto) {
-        String token = authService.login(loginDto);
-
         AuthTokenDto jwtAuthResponse = new AuthTokenDto();
-        jwtAuthResponse.setAccessToken(token);
-
+        jwtAuthResponse.setAccessToken(authService.login(loginDto));
         return ResponseEntity.ok(jwtAuthResponse);
     }
 
     @PostMapping("/registration")
-    public ResponseEntity<String> register(@Valid @RequestBody RegistrationDto registerDto) {
-        String response = authService.registration(registerDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<Void> register(@Valid @RequestBody RegistrationDto registerDto) throws UserValidationException {
+        authService.registration(registerDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
