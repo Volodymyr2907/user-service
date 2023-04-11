@@ -8,6 +8,6 @@ public interface AuthService {
 
     String login(LoginDto loginDto);
 
-    void registration(RegistrationDto registerDto) throws UserValidationException;
+    void signIn(RegistrationDto registerDto) throws UserValidationException;
 
 }

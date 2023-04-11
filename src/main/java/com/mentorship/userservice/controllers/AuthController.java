@@ -29,9 +29,9 @@ public class AuthController {
         return ResponseEntity.ok(jwtAuthResponse);
     }
 
-    @PostMapping("/registration")
+    @PostMapping("/user")
     public ResponseEntity<Void> register(@Valid @RequestBody RegistrationDto registerDto) throws UserValidationException {
-        authService.registration(registerDto);
+        authService.signIn(registerDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
