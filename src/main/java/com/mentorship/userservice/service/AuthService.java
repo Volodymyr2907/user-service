@@ -10,4 +10,6 @@ public interface AuthService {
 
     void registration(RegistrationDto registerDto) throws UserValidationException;
 
+    Boolean hasPermission(String userEmail, String role) throws UserValidationException;
+
 }

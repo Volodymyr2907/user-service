@@ -6,9 +6,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "user_role")
@@ -18,6 +20,8 @@ import lombok.Setter;
 public class UserRole {
 
     @EmbeddedId
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private UserRoleId userRoleId;
 
     @ManyToOne(fetch = FetchType.LAZY)

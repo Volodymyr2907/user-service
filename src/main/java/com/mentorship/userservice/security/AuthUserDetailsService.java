@@ -2,10 +2,10 @@ package com.mentorship.userservice.security;
 
 import com.mentorship.userservice.domain.User;
 import com.mentorship.userservice.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,19 +18,23 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    @Transactional
+    public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        User user = userRepository.findByLoginDetails_Email(userEmail);
 
-        User user = userRepository.findByLoginDetails_Email(email)
-            .orElseThrow(() ->
-                new UsernameNotFoundException("User not found with email: " + email));
-
-        Set<GrantedAuthority> authorities = user
-            .getRoles()
-            .stream()
-            .map((role) -> new SimpleGrantedAuthority(role.getUserRoleId().getRole().name())).collect(Collectors.toSet());
-
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + userEmail);
+        }
         return new org.springframework.security.core.userdetails.User(user.getLoginDetails().getEmail(),
-            user.getLoginDetails().getPassword(), authorities);
+            user.getLoginDetails().getPassword(),
+            getAuthority(user));
+    }
+
+    private Set<SimpleGrantedAuthority> getAuthority(User user) {
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getUserRoleId().getRole()));
+        });
+        return authorities;
     }
 }

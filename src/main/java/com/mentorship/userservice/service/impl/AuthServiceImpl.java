@@ -1,7 +1,5 @@
 package com.mentorship.userservice.service.impl;
 
-import static com.mentorship.userservice.dto.enums.UserRole.REGULAR_USER;
-
 import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.domain.User;
 import com.mentorship.userservice.domain.UserRole;
@@ -14,6 +12,8 @@ import com.mentorship.userservice.repositories.UserRoleRepository;
 import com.mentorship.userservice.security.JwtTokenProvider;
 import com.mentorship.userservice.service.AuthService;
 import jakarta.transaction.Transactional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -41,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public String login(LoginDto loginDto)  {
+    public String login(LoginDto loginDto) {
 
         User user = mapper.loginDtoToUser(loginDto);
 
@@ -77,18 +79,31 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
 
-        User createdUser = userRepository.save(user);
+//        User createdUser = userRepository.save(user);
 
         UserRole userRole = new UserRole();
         UserRoleId userRoleId = new UserRoleId();
 
-        userRoleId.setUserId(createdUser.getId());
-        userRoleId.setRole(REGULAR_USER);
+//        userRoleId.setUserId(createdUser.getId());
+        userRoleId.setRole(com.mentorship.userservice.dto.enums.UserRole.USER);
 
         userRole.setUserRoleId(userRoleId);
-        userRole.setUser(createdUser);
+        userRole.setUser(user);
 
         userRoleRepository.save(userRole);
 
+    }
+
+    public Boolean hasPermission(String token, String role) throws UserValidationException {
+        jwtTokenProvider.validateToken(token);
+        String userEmail = jwtTokenProvider.getUsername(token);
+
+        User user = userRepository.findByLoginDetails_Email(userEmail);
+        Set<String> roles = user.getRoles()
+            .stream()
+            .map(userRole -> userRole.getUserRoleId().getRole().toString())
+            .collect(Collectors.toSet());
+
+        return roles.contains(role.toUpperCase());
     }
 }
