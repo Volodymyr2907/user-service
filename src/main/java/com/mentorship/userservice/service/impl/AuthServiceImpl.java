@@ -4,6 +4,7 @@ import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.domain.User;
 import com.mentorship.userservice.dto.LoginDto;
 import com.mentorship.userservice.dto.RegistrationDto;
+import com.mentorship.userservice.dto.enums.UserRole;
 import com.mentorship.userservice.mapper.AuthMapper;
 import com.mentorship.userservice.repositories.UserRepository;
 import com.mentorship.userservice.security.JwtTokenProvider;
@@ -19,8 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
@@ -66,9 +65,9 @@ public class AuthServiceImpl implements AuthService {
         String userEmail = jwtTokenProvider.getUsername(token);
 
         User user = userRepository.findByLoginDetails_Email(userEmail);
-        Set<String> roles = user.getRoles()
+        Set<String> roles = user.getAuthority()
             .stream()
-            .map(userRole -> userRole.getUserRoleId().getRole().toString())
+            .map(Enum::name)
             .collect(Collectors.toSet());
 
         return roles.contains(role.toUpperCase());
@@ -97,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
-        user.setRole(Set.of(REGULAR_USER));
+        user.setAuthority(Set.of(UserRole.USER));
         return user;
     }
 }

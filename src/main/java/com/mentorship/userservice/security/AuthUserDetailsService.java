@@ -32,9 +32,8 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     private Set<SimpleGrantedAuthority> getAuthority(User user) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        user.getRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getUserRoleId().getRole()));
-        });
+        user.getAuthority().forEach(role ->
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
         return authorities;
     }
 }

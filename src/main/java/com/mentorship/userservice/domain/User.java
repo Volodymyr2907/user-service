@@ -1,8 +1,6 @@
 package com.mentorship.userservice.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mentorship.userservice.dto.enums.UserRole;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -33,7 +31,8 @@ public class User {
     @CollectionTable(name = "user_role",
         joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Set<UserRole> role = new HashSet<>();
+    @Column(name = "role")
+    private Set<UserRole> authority = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
