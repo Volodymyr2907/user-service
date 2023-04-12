@@ -42,12 +42,6 @@ public class RestAPIExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of("Email and/or password are incorrect!"));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Object> handleAuthenticationException(IllegalArgumentException exception) {
-        return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of("Email and/or password are incorrect!"));
-    }
-
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
         HttpHeaders headers, HttpStatusCode status, WebRequest request) {

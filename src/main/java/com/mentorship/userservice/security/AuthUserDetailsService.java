@@ -19,6 +19,7 @@ public class AuthUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Transactional
+    @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
         User user = userRepository.findByLoginDetails_Email(userEmail);
 
