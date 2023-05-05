@@ -14,6 +14,7 @@ import com.mentorship.userservice.mapper.AuthMapper;
 import com.mentorship.userservice.repositories.UserRepository;
 import com.mentorship.userservice.security.JwtTokenProvider;
 import com.mentorship.userservice.service.impl.AuthServiceImpl;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,13 +85,13 @@ public class AuthServiceTest {
     @Test
     public void shouldReturnTrueIfUserRoleMatched() throws UserValidationException {
         User user = new User();
-        user.setAuthority(Set.of(UserRole.USER));
+        user.setAuthorities(Set.of(UserRole.USER));
 
         String userEmail = "example@gmail.com";
 
-        when(jwtTokenProvider.validateToken(any())).thenReturn(true);
+        when(jwtTokenProvider.isTokenValid(any())).thenReturn(true);
         when(jwtTokenProvider.getUsername(any())).thenReturn(userEmail);
-        when(userRepository.findByLoginDetails_Email(userEmail)).thenReturn(user);
+        when(userRepository.findByLoginDetails_Email(userEmail)).thenReturn(Optional.of(user));
 
         Boolean hasUserPermission = authService.hasPermission("TOKEN", UserRole.USER.name());
 
@@ -100,13 +101,13 @@ public class AuthServiceTest {
     @Test
     public void shouldReturnFalseIfUserRoleNotMatched() throws UserValidationException {
         User user = new User();
-        user.setAuthority(Set.of(UserRole.ADMIN));
+        user.setAuthorities(Set.of(UserRole.ADMIN));
 
         String userEmail = "example@gmail.com";
 
-        when(jwtTokenProvider.validateToken(any())).thenReturn(true);
+        when(jwtTokenProvider.isTokenValid(any())).thenReturn(true);
         when(jwtTokenProvider.getUsername(any())).thenReturn(userEmail);
-        when(userRepository.findByLoginDetails_Email(userEmail)).thenReturn(user);
+        when(userRepository.findByLoginDetails_Email(userEmail)).thenReturn(Optional.of(user));
 
         Boolean hasUserPermission = authService.hasPermission("TOKEN", UserRole.USER.name());
 
@@ -118,7 +119,7 @@ public class AuthServiceTest {
 
         String invalidToken = "Invalid token";
 
-        when(jwtTokenProvider.validateToken(invalidToken)).thenThrow(
+        when(jwtTokenProvider.isTokenValid(invalidToken)).thenThrow(
             new UserValidationException(HttpStatus.UNAUTHORIZED, "Invalid JWT token"));
 
         UserValidationException exception = assertThrows(UserValidationException.class,
