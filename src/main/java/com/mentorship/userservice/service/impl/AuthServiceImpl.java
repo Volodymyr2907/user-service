@@ -11,7 +11,6 @@ import com.mentorship.userservice.security.JwtTokenProvider;
 import com.mentorship.userservice.service.AuthService;
 import jakarta.transaction.Transactional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void signIn(RegistrationDto dto) throws UserValidationException {
+    public void signIn(RegistrationDto dto) {
 
         verifyIfUserExist(dto);
         User userBody = createUserBody(dto);
@@ -60,21 +59,20 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-    public Boolean hasPermission(String token, String role) throws UserValidationException {
-        jwtTokenProvider.validateToken(token);
+    public Boolean hasPermission(String token, String role) {
+        jwtTokenProvider.isTokenValid(token);
         String userEmail = jwtTokenProvider.getUsername(token);
 
-        User user = userRepository.findByLoginDetails_Email(userEmail);
-        Set<String> roles = user.getAuthority()
-            .stream()
-            .map(Enum::name)
-            .collect(Collectors.toSet());
+        User user = userRepository.findByLoginDetails_Email(userEmail).get();
 
-        return roles.contains(role.toUpperCase());
+        Set<UserRole> userRoles = user.getAuthorities();
+        UserRole expectedRole = UserRole.valueOf(role.toUpperCase());
+
+        return userRoles.contains(expectedRole);
     }
 
 
-    private void verifyIfUserExist(RegistrationDto dto) throws UserValidationException {
+    private void verifyIfUserExist(RegistrationDto dto) {
 
         if (userRepository.existsByLoginDetails_Email(dto.getEmail())) {
             throw new UserValidationException(HttpStatus.BAD_REQUEST,
@@ -96,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
-        user.setAuthority(Set.of(UserRole.USER));
+        user.setAuthorities(Set.of(UserRole.USER));
         return user;
     }
 }

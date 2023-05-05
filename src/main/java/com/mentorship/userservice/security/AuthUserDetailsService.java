@@ -18,14 +18,12 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
 
-    @Transactional
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
-        User user = userRepository.findByLoginDetails_Email(userEmail);
+        User user = userRepository.findByLoginDetails_Email(userEmail)
+            .orElseThrow(() ->
+                new UsernameNotFoundException("User not found with email: " + userEmail));
 
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + userEmail);
-        }
         return new org.springframework.security.core.userdetails.User(user.getLoginDetails().getEmail(),
             user.getLoginDetails().getPassword(),
             getAuthority(user));
@@ -33,7 +31,7 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     private Set<SimpleGrantedAuthority> getAuthority(User user) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        user.getAuthority().forEach(role ->
+        user.getAuthorities().forEach(role ->
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
         return authorities;
     }
