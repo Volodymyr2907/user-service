@@ -1,12 +1,9 @@
 package com.mentorship.userservice.security;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.mentorship.userservice.controllers.exeptions.UserValidationException;
+import com.mentorship.userservice.controllers.exeptions.TokenValidationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
@@ -54,7 +51,7 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    public boolean validateToken(String token) throws UserValidationException {
+    public boolean isTokenValid(String token) {
         try {
             Jwts.parserBuilder()
                 .setSigningKey(key())
@@ -62,11 +59,11 @@ public class JwtTokenProvider {
                 .parse(token);
             return true;
         } catch (DecodingException ex) {
-            throw new UserValidationException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+            throw new TokenValidationException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            throw new UserValidationException(HttpStatus.UNAUTHORIZED, "Expired JWT token");
+            throw new TokenValidationException(HttpStatus.UNAUTHORIZED, "Expired JWT token");
         } catch (SignatureException ex) {
-            throw new UserValidationException(HttpStatus.UNAUTHORIZED, "Invalid JWT signature");
+            throw new TokenValidationException(HttpStatus.UNAUTHORIZED, "Invalid JWT signature");
         }
     }
 }

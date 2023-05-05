@@ -32,7 +32,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Set<UserRole> authority = new HashSet<>();
+    private Set<UserRole> authorities = new HashSet<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

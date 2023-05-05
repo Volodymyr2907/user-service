@@ -1,5 +1,7 @@
-package com.mentorship.userservice.controllers.exeptions;
+package com.mentorship.userservice.handler;
 
+import com.mentorship.userservice.controllers.exeptions.UserValidationException;
+import com.mentorship.userservice.dto.response.ErrorResponse;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
