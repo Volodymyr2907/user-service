@@ -10,10 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mentorship.userservice.controllers.AuthController;
-import com.mentorship.userservice.controllers.exeptions.ErrorResponse;
 import com.mentorship.userservice.dto.AuthTokenDto;
 import com.mentorship.userservice.dto.LoginDto;
 import com.mentorship.userservice.dto.RegistrationDto;
+import com.mentorship.userservice.dto.response.ErrorResponse;
 import com.mentorship.userservice.security.JwtAuthenticationFilter;
 import com.mentorship.userservice.service.AuthService;
 import java.util.List;

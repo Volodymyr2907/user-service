@@ -74,7 +74,7 @@ public class AuthRepositoryTest {
 
     @Test
     public void shouldReturnUserByEmail() {
-        User actualUser = userRepository.findByLoginDetails_Email(user1Email);
+        User actualUser = userRepository.findByLoginDetails_Email(user1Email).get();
 
         assertThat(actualUser).isEqualTo(user1);
     }
@@ -82,7 +82,7 @@ public class AuthRepositoryTest {
 
     private User createUserObject(String name, String lastName, String phoneNumber, String email) {
         User user = new User();
-        user.setAuthority(Set.of(UserRole.USER));
+        user.setAuthorities(Set.of(UserRole.USER));
         user.setFirstName(name);
         user.setLastName(lastName);
         user.setPhoneNumber(phoneNumber);
