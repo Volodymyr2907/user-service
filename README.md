@@ -1,6 +1,6 @@
 # User Service
 
-Spring boot application that provides an API for making operation with authorization:
+Spring boot application that provides an API for making operation with user and permissions:
 - create user
 - login
 - check permissions
