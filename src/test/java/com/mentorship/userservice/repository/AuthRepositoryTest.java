@@ -15,36 +15,32 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 public class AuthRepositoryTest {
 
+    public static final String USER_TARAS_EMAIL = "taras@gmail.com";
+    public static final String USER_TARAS_LAST_NAME = "Tarasenko";
+    public static final String USER_IVAN_EMAIL = "ivan@gmail.com";
+    public static final String USER_IVAN_NAME = "Ivan";
+    public static final String USER_TARAS_NAME = "Taras";
+    public static final String USER_IVAN_LAST_NAME = "Ivanenko";
+    public static final String USER_IVAN_PHONE_NUMBER = "+111111111";
+
     @Autowired
     private UserRepository userRepository;
 
-    private User user1;
-    private String user1Email;
-    private String user1Name;
-    private String user1LastName;
-    private String user1PhoneNumber;
-    private String user2Name;
-
+    private User createdUserIvan;
 
     @BeforeEach
     public void createUsers() {
 
-        user1Email = "ivan@gmail.com";
-        String user2Email = "taras@gmail.com";
-        user1Name = "Ivan";
-        user2Name = "Taras";
-        user1LastName = "Ivanenko";
-        String user2LastName = "Tarasenko";
-        user1PhoneNumber = "+111111111";
-        User user1Object = createUserObject(user1Name, user1LastName, user1PhoneNumber, user1Email);
-        User user2Object = createUserObject(user2Name, user2LastName, user1PhoneNumber, user2Email);
-        user1 = userRepository.save(user1Object);
-        userRepository.save(user2Object);
+        User userIvanDataToSave = createUserObject(USER_IVAN_NAME, USER_IVAN_LAST_NAME, USER_IVAN_PHONE_NUMBER, USER_IVAN_EMAIL);
+        User userTarasDataToSave = createUserObject(USER_TARAS_NAME, USER_TARAS_LAST_NAME, USER_IVAN_PHONE_NUMBER,
+            USER_TARAS_EMAIL);
+        createdUserIvan = userRepository.save(userIvanDataToSave);
+        userRepository.save(userTarasDataToSave);
     }
 
     @Test
     public void shouldReturnTrueIfEmailPresentInDb() {
-        Boolean isEmailExist = userRepository.existsByLoginDetails_Email(user1Email);
+        Boolean isEmailExist = userRepository.existsByLoginDetails_Email(USER_IVAN_EMAIL);
 
         assertThat(isEmailExist).isTrue();
     }
@@ -58,25 +54,27 @@ public class AuthRepositoryTest {
 
     @Test
     public void shouldReturnTrueIfCombinationFirstNameAndLastNameAndPhoneNumberPresentInDb() {
-        Boolean isCombinationExist = userRepository.existsByFirstNameAndLastNameAndPhoneNumber(user1Name, user1LastName,
-            user1PhoneNumber);
+        Boolean isCombinationExist = userRepository.existsByFirstNameAndLastNameAndPhoneNumber(USER_IVAN_NAME,
+            USER_IVAN_LAST_NAME,
+            USER_IVAN_PHONE_NUMBER);
 
         assertThat(isCombinationExist).isTrue();
     }
 
     @Test
     public void shouldReturnFalseIfCombinationFirstNameAndLastNameAndPhoneNumberNotPresentInDb() {
-        Boolean isCombinationExist = userRepository.existsByFirstNameAndLastNameAndPhoneNumber(user2Name, user1LastName,
-            user1PhoneNumber);
+        Boolean isCombinationExist = userRepository.existsByFirstNameAndLastNameAndPhoneNumber(USER_TARAS_NAME,
+            USER_IVAN_LAST_NAME,
+            USER_IVAN_PHONE_NUMBER);
 
         assertThat(isCombinationExist).isFalse();
     }
 
     @Test
     public void shouldReturnUserByEmail() {
-        User actualUser = userRepository.findByLoginDetails_Email(user1Email).get();
+        User actualUser = userRepository.findByLoginDetails_Email(USER_IVAN_EMAIL).get();
 
-        assertThat(actualUser).isEqualTo(user1);
+        assertThat(actualUser).isEqualTo(createdUserIvan);
     }
 
 

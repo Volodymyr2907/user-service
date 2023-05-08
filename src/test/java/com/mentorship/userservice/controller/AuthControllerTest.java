@@ -71,12 +71,12 @@ public class AuthControllerTest {
     @Test
     public void shouldLoginWithOkStatusCodeAndReturnToken() throws Exception {
 
-        String randomString = "random token";
+        String token = "random token";
 
         AuthTokenDto expectedObject = new AuthTokenDto();
-        expectedObject.setAccessToken(randomString);
+        expectedObject.setAccessToken(token);
 
-        when(authService.login(any(LoginDto.class))).thenReturn(randomString);
+        when(authService.login(any(LoginDto.class))).thenReturn(token);
 
         mockMvc.perform(post(LOGIN_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -97,7 +97,6 @@ public class AuthControllerTest {
             .andReturn().getResponse().getContentAsString();
 
         assertThat(getErrorListFromResponse(contextResponse)).containsOnly("Email could not be empty or null");
-
     }
 
     @Test
@@ -112,7 +111,6 @@ public class AuthControllerTest {
             .andReturn().getResponse().getContentAsString();
 
         assertThat(getErrorListFromResponse(contextResponse)).containsOnly("Email is not valid");
-
     }
 
     @Test
@@ -127,7 +125,6 @@ public class AuthControllerTest {
             .andReturn().getResponse().getContentAsString();
 
         assertThat(getErrorListFromResponse(contextResponse)).containsOnly("Password can not be empty or null");
-
     }
 
     @Test
@@ -151,8 +148,6 @@ public class AuthControllerTest {
             .andReturn().getResponse().getContentAsString();
 
         assertThat(getErrorListFromResponse(contextResponse)).containsOnly("Email is not valid");
-
-
     }
 
     @Test
@@ -167,13 +162,10 @@ public class AuthControllerTest {
             .andReturn().getResponse().getContentAsString();
 
         assertThat(getErrorListFromResponse(contextResponse)).containsOnly("Email could not be empty or null");
-
-
     }
 
     private List<String> getErrorListFromResponse(String responseAsString) throws JsonProcessingException {
         return objectMapper.readValue(responseAsString, ErrorResponse.class).getErrors();
     }
-
 
 }
