@@ -1,6 +1,5 @@
 package com.mentorship.userservice.controllers;
 
-import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.dto.AuthTokenDto;
 import com.mentorship.userservice.dto.LoginDto;
 import com.mentorship.userservice.dto.RegistrationDto;
@@ -9,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +31,14 @@ public class AuthController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegistrationDto registerDto) throws UserValidationException {
+    public ResponseEntity<Void> register(@Valid @RequestBody RegistrationDto registerDto) {
         authService.signIn(registerDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/permission/{token}/{role}")
+    public ResponseEntity<Boolean> checkUserPermission(@PathVariable String token, @PathVariable String role) {
+        Boolean hasPermission = authService.hasPermission(token,role);
+        return new ResponseEntity<>(hasPermission, HttpStatus.OK);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserValidationException extends RuntimeException {
+public class TokenValidationException extends RuntimeException {
 
     private HttpStatus status;
     private String message;

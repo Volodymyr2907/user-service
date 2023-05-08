@@ -1,4 +1,4 @@
-package com.mentorship.userservice.controllers.exeptions;
+package com.mentorship.userservice.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

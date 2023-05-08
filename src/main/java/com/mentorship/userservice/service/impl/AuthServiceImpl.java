@@ -1,11 +1,10 @@
 package com.mentorship.userservice.service.impl;
 
-import static com.mentorship.userservice.dto.enums.UserRole.REGULAR_USER;
-
 import com.mentorship.userservice.controllers.exeptions.UserValidationException;
 import com.mentorship.userservice.domain.User;
 import com.mentorship.userservice.dto.LoginDto;
 import com.mentorship.userservice.dto.RegistrationDto;
+import com.mentorship.userservice.dto.enums.UserRole;
 import com.mentorship.userservice.mapper.AuthMapper;
 import com.mentorship.userservice.repositories.UserRepository;
 import com.mentorship.userservice.security.JwtTokenProvider;
@@ -52,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void signIn(RegistrationDto dto) throws UserValidationException {
+    public void signIn(RegistrationDto dto) {
 
         verifyIfUserExist(dto);
         User userBody = createUserBody(dto);
@@ -60,8 +59,20 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    public Boolean hasPermission(String token, String role) {
+        jwtTokenProvider.isTokenValid(token);
+        String userEmail = jwtTokenProvider.getUsername(token);
 
-    private void verifyIfUserExist(RegistrationDto dto) throws UserValidationException {
+        User user = userRepository.findByLoginDetails_Email(userEmail).get();
+
+        Set<UserRole> userRoles = user.getAuthorities();
+        UserRole expectedRole = UserRole.valueOf(role.toUpperCase());
+
+        return userRoles.contains(expectedRole);
+    }
+
+
+    private void verifyIfUserExist(RegistrationDto dto) {
 
         if (userRepository.existsByLoginDetails_Email(dto.getEmail())) {
             throw new UserValidationException(HttpStatus.BAD_REQUEST,
@@ -83,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhoneNumber(dto.getPhoneNumber());
-        user.setRole(Set.of(REGULAR_USER));
+        user.setAuthorities(Set.of(UserRole.USER));
         return user;
     }
 }

@@ -1,5 +1,7 @@
-package com.mentorship.userservice.controllers.exeptions;
+package com.mentorship.userservice.handler;
 
+import com.mentorship.userservice.controllers.exeptions.UserValidationException;
+import com.mentorship.userservice.dto.response.ErrorResponse;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,7 +43,6 @@ public class RestAPIExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception) {
         return buildResponseEntity(HttpStatus.BAD_REQUEST, List.of("Email and/or password are incorrect!"));
     }
-
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
